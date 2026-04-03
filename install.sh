@@ -1,6 +1,6 @@
 #!/bin/bash
-# Gonka × OpenClaw — автоустановка
-# https://github.com/nikinrussia-ui/gonka-openclaw
+# Gonka x OpenClaw — автоустановка
+# Разработано каналом @dairix_ai — t.me/dairix_ai
 
 set -e
 
@@ -14,12 +14,8 @@ NC='\033[0m'
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 echo ""
-echo -e "${CYAN}╔════════════════════════════════════════╗${NC}"
-echo -e "${CYAN}║     🤖 Gonka × OpenClaw Installer      ║${NC}"
-echo -e "${CYAN}║                                        ║${NC}"
-echo -e "${CYAN}║   Разработано каналом @dairix_ai       ║${NC}"
-echo -e "${CYAN}║   t.me/dairix_ai                       ║${NC}"
-echo -e "${CYAN}╚════════════════════════════════════════╝${NC}"
+echo -e "${CYAN}🤖 Gonka x OpenClaw Installer${NC}"
+echo -e "${CYAN}   Разработано каналом @dairix_ai | t.me/dairix_ai${NC}"
 echo ""
 
 # 1. Проверяем зависимости
@@ -42,7 +38,7 @@ fi
 # 2. Запрашиваем приватный ключ (НЕ отображается при вводе)
 if [ -z "$GONKA_PRIVATE_KEY" ]; then
     echo -e "${YELLOW}Введи SDK приватный ключ с gonka.ai:${NC}"
-    echo -e "${CYAN}(ввод скрыт, ключ нигде не сохраняется кроме локального .env)${NC}"
+    echo -e "${CYAN}(ввод скрыт — ключ сохранится только локально в /root/gonka/.env)${NC}"
     read -rs GONKA_PRIVATE_KEY
     echo ""
 fi
@@ -58,11 +54,9 @@ $PIP install gonka-openai -q
 
 echo -e "${GREEN}▶ Копируем прокси...${NC}"
 mkdir -p /root/gonka
-
-# Копируем proxy БЕЗ замены ключа в коде
 cp "$SCRIPT_DIR/gonka_proxy.py" /root/gonka/gonka_proxy.py
 
-# Ключ сохраняем в отдельный .env файл с правами только для root
+# Ключ сохраняем в .env с правами только для root
 cat > /root/gonka/.env << ENVEOF
 GONKA_PRIVATE_KEY=${GONKA_PRIVATE_KEY}
 ENVEOF
@@ -97,28 +91,24 @@ sleep 2
 
 if curl -s http://127.0.0.1:8001/v1/models | grep -q "Qwen"; then
     echo ""
-    echo -e "${GREEN}✅ Гонка запущена! Прокси работает на http://127.0.0.1:8001${NC}"
+    echo -e "${GREEN}✅ Готово! Прокси работает на http://127.0.0.1:8001${NC}"
     echo ""
     echo -e "${CYAN}🔒 Безопасность:${NC}"
     echo "   Ключ хранится только в /root/gonka/.env (права 600, только root)"
     echo "   Прокси слушает только 127.0.0.1 — снаружи недоступен"
     echo "   Запросы идут напрямую на node1.gonka.ai — через тебя ничего не проходит"
     echo ""
-    echo -e "${CYAN}╔════════════════════════════════════════════════════════╗${NC}"
-    echo -e "${CYAN}║                                                        ║${NC}"
-    echo -e "${CYAN}║   📱 Следующие шаги — читай в Telegram-канале:         ║${NC}"
-    echo -e "${CYAN}║                                                        ║${NC}"
-    echo -e "${CYAN}║      👉  t.me/dairix_ai                                ║${NC}"
-    echo -e "${CYAN}║                                                        ║${NC}"
-    echo -e "${CYAN}║   Там найдёшь:                                         ║${NC}"
-    echo -e "${CYAN}║   • Где получить бесплатные токены GNK                 ║${NC}"
-    echo -e "${CYAN}║   • Как подключить Гонку к LiteLLM и OpenClaw          ║${NC}"
-    echo -e "${CYAN}║   • Обновления и новые инструкции                      ║${NC}"
-    echo -e "${CYAN}║                                                        ║${NC}"
-    echo -e "${CYAN}╚════════════════════════════════════════════════════════╝${NC}"
+    echo -e "${CYAN}📱 Следующие шаги — читай в Telegram-канале:${NC}"
+    echo ""
+    echo -e "   ${YELLOW}👉 t.me/dairix_ai${NC}"
+    echo ""
+    echo "   Там найдёшь:"
+    echo "   • Где получить бесплатные токены GNK"
+    echo "   • Как подключить Гонку к LiteLLM и OpenClaw"
+    echo "   • Обновления и новые инструкции"
     echo ""
 else
     echo -e "${RED}❌ Прокси не ответил. Проверь логи:${NC}"
-    echo "  journalctl -u gonka-proxy -n 30"
+    echo "   journalctl -u gonka-proxy -n 30"
     exit 1
 fi
