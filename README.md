@@ -81,17 +81,10 @@ systemctl restart litellm
 
 ## Шаг 4 — Подключи к OpenClaw
 
-В `~/.openclaw/openclaw.json` в секцию `models.providers.litellm.models` добавь:
-
-```json
-{
-  "id": "GonkaOriginal",
-  "name": "Gonka Qwen3-235B"
-}
-```
+Применяй конфиг через patch — это безопасно, не перезапишет остальные настройки:
 
 ```bash
-openclaw gateway config.apply --file ~/.openclaw/openclaw.json
+openclaw gateway config.patch '{"models":{"providers":{"litellm":{"models":[{"id":"GonkaOriginal","name":"Gonka Qwen3-235B"}]}}}}'
 ```
 
 В чате с агентом:
