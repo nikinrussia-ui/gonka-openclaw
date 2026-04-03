@@ -60,8 +60,10 @@ GONKA_PRIVATE_KEY=${GONKA_PRIVATE_KEY}
 ENVEOF
 chmod 600 /root/gonka/.env
 
+PYTHON3=$(command -v python3)
+
 echo -e "${GREEN}▶ Создаём systemd сервис...${NC}"
-cat > /etc/systemd/system/gonka-proxy.service << 'EOF'
+cat > /etc/systemd/system/gonka-proxy.service << EOF
 [Unit]
 Description=Gonka Local Proxy (signed OpenAI-compat API)
 After=network.target
@@ -70,7 +72,7 @@ After=network.target
 Type=simple
 WorkingDirectory=/root/gonka
 EnvironmentFile=/root/gonka/.env
-ExecStart=/usr/bin/python3 /root/gonka/gonka_proxy.py
+ExecStart=${PYTHON3} /root/gonka/gonka_proxy.py
 Restart=always
 RestartSec=5
 StandardOutput=journal
