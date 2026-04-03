@@ -10,14 +10,28 @@ YELLOW='\033[1;33m'
 CYAN='\033[0;36m'
 NC='\033[0m'
 
+# Директория скрипта (работает при запуске из любого места)
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
 echo ""
 echo "🤖 Gonka × OpenClaw Installer"
 echo "================================"
 echo ""
 
-# 1. Проверяем Python
+# 1. Проверяем зависимости
 if ! command -v python3 &>/dev/null; then
     echo -e "${RED}❌ Python3 не найден. Установи: apt install python3${NC}"
+    exit 1
+fi
+
+if ! command -v curl &>/dev/null; then
+    echo -e "${RED}❌ curl не найден. Установи: apt install curl${NC}"
+    exit 1
+fi
+
+PIP=$(command -v pip3 2>/dev/null || command -v pip 2>/dev/null || true)
+if [ -z "$PIP" ]; then
+    echo -e "${RED}❌ pip не найден. Установи: apt install python3-pip${NC}"
     exit 1
 fi
 
@@ -36,13 +50,13 @@ fi
 
 echo ""
 echo -e "${GREEN}▶ Устанавливаем gonka-openai SDK...${NC}"
-pip install gonka-openai -q
+$PIP install gonka-openai -q
 
 echo -e "${GREEN}▶ Копируем прокси...${NC}"
 mkdir -p /root/gonka
 
 # Копируем proxy БЕЗ замены ключа в коде
-cp "$(dirname "$0")/gonka_proxy.py" /root/gonka/gonka_proxy.py
+cp "$SCRIPT_DIR/gonka_proxy.py" /root/gonka/gonka_proxy.py
 
 # Ключ сохраняем в отдельный .env файл с правами только для root
 cat > /root/gonka/.env << ENVEOF
