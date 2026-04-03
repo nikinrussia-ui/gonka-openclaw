@@ -10,9 +10,6 @@ YELLOW='\033[1;33m'
 CYAN='\033[0;36m'
 NC='\033[0m'
 
-# Директория скрипта (работает при запуске из любого места)
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-
 echo ""
 echo -e "${CYAN}🤖 Gonka x OpenClaw Installer${NC}"
 echo -e "${CYAN}   Разработано каналом @dairix_ai | t.me/dairix_ai${NC}"
@@ -35,11 +32,11 @@ if [ -z "$PIP" ]; then
     exit 1
 fi
 
-# 2. Запрашиваем приватный ключ (НЕ отображается при вводе)
+# 2. Запрашиваем приватный ключ (ввод с терминала, скрыт)
 if [ -z "$GONKA_PRIVATE_KEY" ]; then
     echo -e "${YELLOW}Введи SDK приватный ключ с gonka.ai:${NC}"
     echo -e "${CYAN}(ввод скрыт — ключ сохранится только локально в /root/gonka/.env)${NC}"
-    read -rs GONKA_PRIVATE_KEY
+    read -rs GONKA_PRIVATE_KEY < /dev/tty
     echo ""
 fi
 
@@ -52,9 +49,10 @@ echo ""
 echo -e "${GREEN}▶ Устанавливаем gonka-openai SDK...${NC}"
 $PIP install gonka-openai -q
 
-echo -e "${GREEN}▶ Копируем прокси...${NC}"
+echo -e "${GREEN}▶ Скачиваем прокси...${NC}"
 mkdir -p /root/gonka
-cp "$SCRIPT_DIR/gonka_proxy.py" /root/gonka/gonka_proxy.py
+curl -fsSL https://raw.githubusercontent.com/nikinrussia-ui/gonka-openclaw/main/gonka_proxy.py \
+    -o /root/gonka/gonka_proxy.py
 
 # Ключ сохраняем в .env с правами только для root
 cat > /root/gonka/.env << ENVEOF
